@@ -1,0 +1,2 @@
+No main.rb, é executado o serviço de acesso aos sites.
+Deve criar um serviço no systemd para o executar continuamente.
