@@ -1,22 +1,20 @@
+require_relative 'notifier'
+include Notifier
+
 require "mongo"
 require "httparty"
 require 'nokogiri'
-require 'telegram/bot'
 
 
 client = Mongo::Client.new([ '127.0.0.1:27017' ],
                            :database => 'mining_net_development')
 
-token = 'token'
-bot = Telegram::Bot::Client.new(token)
-bot.send_message(chat_id: chat_id, text: 'Message')
-
 while true do
   db = client.database
   listens = db[:listens]
   for ele in listens.find({}) do
-    page = HTTParty.get ele[:url]
-    if page
+    begin
+      page = HTTParty.get ele[:url]
       page = Nokogiri::HTML(page)
 
       locator = ele[:searched_item][:locator]
