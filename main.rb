@@ -13,7 +13,7 @@ while true do
   db = client.database
   listens = db[:listens]
   for ele in listens.find({}) do
-    begin
+    # begin
       page = HTTParty.get ele[:url]
       page = Nokogiri::HTML(page)
 
@@ -21,6 +21,7 @@ while true do
       scrap_function = page.method(locator.to_sym)
       current_state = scrap_function.call(ele[:searched_item][:indentifier])
 
+      test(current_state.inner_html)
       reports = db[:reports]
       unless reports.find({ "from": ele[:_id],
                             "content": current_state.inner_html }).first
@@ -29,7 +30,9 @@ while true do
                              "content": current_state.inner_html
                            })
       end
-    end
+    # rescue
+    #   test("deu erro...")
+    # end
   end
   sleep(5)
 end

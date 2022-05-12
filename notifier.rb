@@ -1,10 +1,12 @@
 require 'telegram/bot'
-token = 'token'
-bot = Telegram::Bot::Client.new(token)
 
 module Notifier
+  def bot
+    token = 'token'
+    Telegram::Bot::Client.new(token)
+  end
 
-  def scrap_items(locator, indentfier, value_type)
+  def scrap_items(url, locator, indentfier, value_type)
 
     ## ele.inner_html
     #  or
@@ -13,14 +15,18 @@ module Notifier
 
   def notificar_telegram(model_message)
     ##Delimitador inicial <## , delimitador final !>
-    juncao = []
+
+    processed_message = ""
     for i in model_message[:wanted_itens] do
-      juncao.insert i[:position], scrap_items(i[:locator], i[:indentifier], i[:value_type])
-      juncao.insert i[:position]-1
+      processed_message+= i[:pre_text] + scrap_items(i[:url], i[:locator],
+                                                    i[:indentifier], i[:value_type])
     end
 
-    #processed_message = juncao.join()
     #bot.send_message(chat_id: chat_id, text: processed_message)
+  end
+
+  def test (message)
+    bot.send_message(chat_id: chat_id, text: message)
   end
 
 end
