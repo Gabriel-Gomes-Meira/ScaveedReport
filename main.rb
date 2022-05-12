@@ -14,19 +14,16 @@ while true do
   listens = db[:listens]
   for ele in listens.find({}) do
     # begin
-      page = readed_page(ele[:url])
-
-      locator = ele[:searched_item][:locator]
-      scrap_function = page.method(locator.to_sym)
-      current_state = scrap_function.call(ele[:searched_item][:indentifier])
-
-      test(current_state.inner_html)
+      page = readed_page(ele[:url])    
+      current_state = scrap_items(page, ele[:searched_item][:locator], ele[:searched_item][:indentifier], "inner_html")
+    
+      test(current_state)
       reports = db[:reports]
       unless reports.find({ "from": ele[:_id],
-                            "content": current_state.inner_html }).first
+                            "content": current_state }).first
         reports.insert_one({
                              "from": ele[:_id],
-                             "content": current_state.inner_html
+                             "content": current_state
                            })
       end
     # rescue
