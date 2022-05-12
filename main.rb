@@ -1,9 +1,9 @@
 require_relative 'notifier'
+require_relative 'scraper'
 include Notifier
+include Scraper
 
 require "mongo"
-require "httparty"
-require 'nokogiri'
 
 
 client = Mongo::Client.new([ '127.0.0.1:27017' ],
@@ -14,8 +14,7 @@ while true do
   listens = db[:listens]
   for ele in listens.find({}) do
     # begin
-      page = HTTParty.get ele[:url]
-      page = Nokogiri::HTML(page)
+      page = readed_page(ele[:url])
 
       locator = ele[:searched_item][:locator]
       scrap_function = page.method(locator.to_sym)
