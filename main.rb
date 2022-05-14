@@ -15,7 +15,7 @@ while true do
   for ele in listens.find({}) do
     # begin
       page = readed_page(ele[:url])    
-      current_state = scrap_items(page, ele[:searched_item][:locator], ele[:searched_item][:indentifier], "inner_html")
+      current_state = scrap_items(page, ele[:searched_item][:locator], ele[:searched_item][:indentifier]).inner_html
     
       test(current_state)
       reports = db[:reports]

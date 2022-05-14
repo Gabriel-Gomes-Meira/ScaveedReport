@@ -6,5 +6,5 @@ source "https://rubygems.org"
 gem "nokogiri"
 gem "httparty"
 gem "mongo", "~> 2"
-gem 'telegram-bot-ruby'
+# gem 'telegram-bot-ruby'
 gem 'telegram-bot'
