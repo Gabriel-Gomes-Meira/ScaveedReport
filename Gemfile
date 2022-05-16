@@ -8,3 +8,4 @@ gem "httparty"
 gem "mongo", "~> 2"
 # gem 'telegram-bot-ruby'
 gem 'telegram-bot'
+gem 'byebug'

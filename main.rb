@@ -13,11 +13,10 @@ while true do
   db = client.database
   listens = db[:listens]
   for ele in listens.find({}) do
-    # begin
+    begin
       page = readed_page(ele[:url])    
       current_state = scrap_items(page, ele[:searched_item][:locator], ele[:searched_item][:indentifier]).inner_html
-    
-      test(current_state)
+
       reports = db[:reports]
       unless reports.find({ "from": ele[:_id],
                             "content": current_state }).first
@@ -26,9 +25,14 @@ while true do
                              "content": current_state
                            })
       end
-    # rescue
-    #   test("deu erro...")
-    # end
+
+      nms = db[:notification_models]
+      model = nms.find({"listen_id"=>ele[:_id]}).first
+      notificar_telegram((model[:wanted_items])+model[:remain_message])
+
+      # rescue
+      #   test("deu erro...")
+    end
   end
   sleep(5)
 end
