@@ -7,7 +7,7 @@ module Notifier
   end
 
   def notificar_telegram(message)
-    bot.send_message(chat_id: chat_id, text: processed_message)
+    bot.send_message(chat_id: chat_id, text: message)
   end
 
   def test (message)

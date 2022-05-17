@@ -1,19 +1,25 @@
 require 'httparty'
 require 'nokogiri'
+require 'byebug'
 
 module Scraper
   def readed_page(url)
     Nokogiri::HTML(HTTParty.get(url))
   end
 
-  def scrap_items(page, indentifier, recursive_path, distinguer = {})
+  def scrap_items(page, indentifier, recursive_path = [], distinguer = {})
 
     if recursive_path.length==0
       element = page.search(indentifier)
-      if distinguer[:is_last] then element.last  end
+      if distinguer[:is_last]
+        element.last
+      else
+        element.first
+      end
     else
       item = recursive_path.shift
-      scrap_items(scrap_items(page, item[:indentifier], []), indentifier,
+      # byebug
+      scrap_items(scrap_items(page, item), indentifier,
                       recursive_path, distinguer)
     end
   end
@@ -21,15 +27,20 @@ module Scraper
   def scrap_value(item, wanted_value)
     ## com scrap value eu deveria conseguir buscar tanto um attributo existente,
     ## quanto o conteúdo do elemento.
-    begin
-      item[wanted_value.to_sym]
-    rescue
-      item.method(wanted_value.to_sym).call
-    end
+    # begin
+      #byebug
+      if !!item[wanted_value.to_sym]
+        item[wanted_value.to_sym]
+      else
+        item.method(wanted_value.to_sym).call
+      end
+
+    # end
   end
 
   def mount_message(wanted_items)
     # puts wanted_items[0]
+
     processed_message = ""
     for i in wanted_items do
 

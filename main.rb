@@ -15,7 +15,10 @@ while true do
   for ele in listens.find({}) do
     begin
       page = readed_page(ele[:url])    
-      current_state = scrap_items(page, ele[:searched_item][:locator], ele[:searched_item][:indentifier]).inner_html
+
+      current_state = scrap_value(scrap_items(page, ele[:searched_item][:indentifier]),
+                                    "inner_html")
+
 
       reports = db[:reports]
       unless reports.find({ "from": ele[:_id],
@@ -28,7 +31,7 @@ while true do
 
       nms = db[:notification_models]
       model = nms.find({"listen_id"=>ele[:_id]}).first
-      notificar_telegram((model[:wanted_items])+model[:remain_message])
+      notificar_telegram(mount_message(model[:wanted_items])+model[:remain_message])
 
       # rescue
       #   test("deu erro...")
