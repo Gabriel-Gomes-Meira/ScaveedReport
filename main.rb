@@ -31,7 +31,8 @@ while true do
 
       nms = db[:notification_models]
       model = nms.find({"listen_id"=>ele[:_id]}).first
-      notificar_telegram(mount_message(model[:wanted_items])+model[:remain_message])
+      notificar_telegram(mount_message(model[:wanted_items], model[:message]),
+                         !model[:message].rindex("<img>").nil?)
 
       # rescue
       #   test("deu erro...")

@@ -38,15 +38,23 @@ module Scraper
     # end
   end
 
-  def mount_message(wanted_items)
+  def replace_word(word, subword, otherword)
+    index = word.rindex(subword)
+    if index
+      word[index, subword.length] = otherword
+    end
+  end
+
+
+  def mount_message(wanted_items, message)
     # puts wanted_items[0]
 
-    processed_message = ""
+    processed_message = message
     for i in wanted_items do
 
       item =scrap_items(readed_page(i[:url]), i[:indentifier],
                         i[:recursive_path], i[:distinguer])
-      processed_message = i[:pre_text] + scrap_value(item, i[:wanted_value])
+      replace_word(processed_message, i[:var_name], scrap_value(item, i[:wanted_value]))
     end
 
     processed_message
