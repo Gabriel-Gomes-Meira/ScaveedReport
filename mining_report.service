@@ -2,12 +2,14 @@
 Description=Agente responsável pelo acesso à web.
 After=network.target
 StartLimitIntervalSec=0
+
 [Service]
 Type=simple
 Restart=always
 RestartSec=1
 User=biel
-ExecStart=ruby /home/biel/Documentos/Github/MiningReport/main.rb
+WorkingDirectory=/home/biel/Documentos/GitHub/MiningReport/
+ExecStart=/home/biel/.rvm/wrappers/default/bundle exe ruby main.rb
 
 [Install]
 WantedBy=multi-user.target
