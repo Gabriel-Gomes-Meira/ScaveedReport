@@ -21,7 +21,7 @@ module Notifier
         img_tag.slice!(0..1)
       end
 
-      byebug
+      # byebug
       bot.send_photo(chat_id: chat_id, photo:img_tag,
                      caption:message, parse_mode:"html")
     end
