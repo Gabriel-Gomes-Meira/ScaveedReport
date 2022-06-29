@@ -9,6 +9,10 @@ require "mongo"
 client = Mongo::Client.new([ '127.0.0.1:27017' ],
                            :database => 'mining_net_development')
 
+user = client[:users].find({}).first
+token = user[:bot_token]
+chatid = user[:chat_id]
+
 while true do
   db = client.database
   listens = db[:listens]
