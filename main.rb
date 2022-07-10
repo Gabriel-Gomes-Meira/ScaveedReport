@@ -10,7 +10,7 @@ client = Mongo::Client.new([ '127.0.0.1:27017' ],
                            :database => 'mining_net_development')
 
 user = client[:users].find({}).first
-$token = user[:bot_token]
+$token = user[:token]
 $chatid = user[:chat_id]
 
 while true do
