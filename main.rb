@@ -20,7 +20,7 @@ while true do
     begin
       page = readed_page(ele[:url])    
 
-      current_state = scrap_value(scrap_items(page, ele[:searched_item][:element_indentifier]),
+      current_state = scrap_value(scrap_items(page, ele[:element_indentifier]),
                                     "inner_html")
 
       reports = db[:reports]
