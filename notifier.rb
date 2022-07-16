@@ -2,21 +2,21 @@ require 'telegram/bot'
 require 'byebug'
 
 module Notifier
-  def token
-    @token ||= ''
-  end
+  #def token
+    #@token ||= ''
+  #end
 
   def bot
-    Telegram::Bot::Client.new(token)
+    Telegram::Bot::Client.new($token)
   end
 
-  def chatid
-    @chatid ||= 0
-  end
+  #def chatid
+    #@chatid ||= 0
+  #end
 
   def notificar_telegram(message, has_image=false)
     if !has_image
-      bot.send_message(chat_id: chatid, text: message, parse_mode: "html")
+      bot.send_message(chat_id: $chatid, text: message, parse_mode: "html")
     else
       index_start =  message.rindex("<img>")
       index_end = message.rindex("</img>")
@@ -29,7 +29,7 @@ module Notifier
       end
 
       # byebug
-      bot.send_photo(chat_id: chatid, photo:img_tag,
+      bot.send_photo(chat_id: $chatid, photo:img_tag,
                      caption:message, parse_mode:"html")
     end
 
