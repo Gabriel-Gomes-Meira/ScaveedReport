@@ -2,6 +2,7 @@ require 'telegram/bot'
 require 'byebug'
 
 module Notifier
+
   #def token
     #@token ||= ''
   #end

@@ -11,6 +11,7 @@ client = Mongo::Client.new([ '127.0.0.1:27017' ],
 
 user = client[:users].find({}).first
 
+
 if user
   $token = user[:telegram][:token]
   $chatid = user[:telegram][:chat_id]
