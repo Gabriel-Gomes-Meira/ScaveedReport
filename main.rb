@@ -11,7 +11,6 @@ client = Mongo::Client.new([ '127.0.0.1:27017' ],
 
 user = client[:users].find({}).first
 
-
 if user
   $token = user[:telegram][:token]
   $chatid = user[:telegram][:chat_id]
@@ -24,27 +23,44 @@ if user
 
       current_state = scrap_value(scrap_items(page, ele[:element_indentifier]),
                                     "inner_html")
-
-      reports = db[:reports]
-      unless reports.find({ "from": ele[:_id], "content": current_state }).first
-        ##Relatar mudança no banco de dados
-        reports.insert_one({
-                              "from": ele[:_id],
-                              "content": current_state
-                            })
+      report = db[:reports].find({"fromId": ele[:_id]}).first
+      if report.nil?
+        report = {:fromId => ele[:_id],
+                   :fromName => ele[:name],
+                   :registers => []}
+        resp = db[:reports].insert_one(report)
+        report = db[:reports].find("_id" => resp.inserted_id)
+      end
+      
+      if report[:registers].index {|x| x[:content] == current_state} == nil
 
         #notificar no telegram
-        model = db[:notification_models].find({"listen_id"=>ele[:_id]}).first
-        notificar_telegram(mount_message(model[:wanted_items], model[:message]),
-                            !model[:message].rindex("<img>").nil?)
+        begin
+          model = db[:notification_models].find({"listen_id"=>ele[:_id]}).first
+          if !model.nil?
+            notificar_telegram(mount_message(model[:wanted_items], model[:message]),
+            !model[:message].rindex("<img>").nil?)
+          end
+        rescue StandardError => e
+          `touch notifier.log`
+          `echo "#{e.full_message}" >> notifier.log`
+        end
 
         #executar tarefa associada
         model_task = db[:model_task].find({"listen_id"=>ele[:_id]}).first
         if !model_task.nil?
           db[:queued_tasks].insert_one(model_task.except(:_id))
         end
-      end
 
+        ##Relatar mudança no banco de dados
+        report[:registers].push({:content => current_state,
+                                 :created_at => Time.new})
+
+      end
+      
+    rescue StandardError => e
+      `touch main.log`
+      `echo "#{e.full_message}" >> main.log`
     end
   end
 end

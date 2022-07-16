@@ -1,2 +1,5 @@
 
 .byebug_history
+*.sh
+*.service
+Readme
