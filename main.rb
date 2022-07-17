@@ -55,6 +55,8 @@ if user
         ##Relatar mudança no banco de dados
         report[:registers].push({:content => current_state,
                                  :created_at => Time.new})
+        db[:reports].update_one({:_id => report[:_id]},
+                    { "$set" => { :registers => report[:registers]} })
 
       end
       
