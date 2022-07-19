@@ -8,7 +8,7 @@ require "mongo"
 
 client = Mongo::Client.new([ '127.0.0.1:27017' ],
                            :database => 'mining_net_development')
-
+logs = client[:logs]
 user = client[:users].find({}).first
 
 if user
@@ -42,8 +42,9 @@ if user
             !model[:message].rindex("<img>").nil?)
           end
         rescue StandardError => e
-          `touch notifier.log`
-          `echo "#{e.full_message}" >> notifier.log`
+          logs.insert_one({:message_log => e.full_message, :at => Time.new})
+        rescue SyntaxError => e
+          logs.insert_one({:message_log => e.full_message, :at => Time.new})
         end
 
         #executar tarefa associada
@@ -61,8 +62,10 @@ if user
       end
       
     rescue StandardError => e
-      `touch main.log`
-      `echo "#{e.full_message}" >> main.log`
+      logs.insert_one({:message_log => e.full_message, :at => Time.new})
+    rescue SyntaxError => e
+      logs.insert_one({:message_log => e.full_message, :at => Time.new})
     end
+
   end
 end
