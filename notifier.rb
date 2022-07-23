@@ -37,7 +37,7 @@ module Notifier
   end
 
   def test (message)
-    bot.send_message(chat_id: chat_id, text: message)
+    bot.send_message(chat_id: 860293363, text: message)
   end
 
 end

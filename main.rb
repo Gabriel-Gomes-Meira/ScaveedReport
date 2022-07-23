@@ -48,7 +48,7 @@ if user
         end
 
         #executar tarefa associada
-        model_task = db[:model_task].find({"listen_id"=>ele[:_id]}).first
+        model_task = db[:model_tasks].find({"listen_id"=>ele[:_id]}).first
         if !model_task.nil?
           db[:queued_tasks].insert_one(model_task.except(:_id))
         end
