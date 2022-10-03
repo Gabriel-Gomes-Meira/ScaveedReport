@@ -3,68 +3,61 @@ require_relative 'scraper'
 include Notifier
 include Scraper
 
-require "mongo"
+require "pg"
+require "sequel"
 
 
-client = Mongo::Client.new([ '127.0.0.1:27017' ],
-                           :database => 'mining_net_development')
+client = Sequel.connect('postgres://postgres:password@db/scaveed')
 logs = client[:logs]
-user = client[:users].find({}).first
+user = client[:users].first
 
 if user
-  $token = user[:telegram][:token]
-  $chatid = user[:telegram][:chat_id]
+  $token = user[:telegram_token]
+  $chatid = user[:telegram_chatid]
 
-  db = client.database
-  listens = db[:listens]
-  for ele in listens.find({}) do
+  listens = client[:listens]
+  for ele in listens do
     begin
       page = readed_page(ele[:url])
 
       current_state = scrap_value(scrap_items(page, ele[:element_indentifier]),
                                     "inner_html")
-      report = db[:reports].find({"fromId": ele[:_id]}).first
-      if report.nil?
-        report = {:fromId => ele[:_id],
-                   :fromName => ele[:name],
-                   :registers => []}
-        resp = db[:reports].insert_one(report)
-        report = db[:reports].find("_id" => resp.inserted_id)
-      end
       
-      if report[:registers].index {|x| x[:content] == current_state} == nil
+
+      if client[:reports].where{(fromId: ele[:id) & (current_state: current_state)} != nil
+
+        report = {:fromId => ele[:_id],
+                :current_state => current_state,
+                :at => Time.now}
 
         #notificar no telegram
         begin
-          model = db[:notification_models].find({"listen_id"=>ele[:_id]}).first
+          model = client[:notification_models].where{id: ele[:notification_model_id]}.first
           if !model.nil?
             notificar_telegram(mount_message(model[:wanted_items], model[:message]),
             !model[:message].rindex("<img>").nil?)
           end
         rescue StandardError => e
-          logs.insert_one({:message_log => e.full_message, :at => Time.new})
+          logs.insert({:message_log => e.full_message, :at => Time.new})
         rescue SyntaxError => e
-          logs.insert_one({:message_log => e.full_message, :at => Time.new})
+          logs.insert({:message_log => e.full_message, :at => Time.new})
         end
 
         #executar tarefa associada
-        model_task = db[:model_tasks].find({"listen_id"=>ele[:_id]}).first
+        model_task = client[:model_tasks].where{id: ele[:model_task_id]}.first
         if !model_task.nil?
-          db[:queued_tasks].insert_one(model_task.except(:_id))
+          client[:queued_tasks].insert_one(model_task.except(:id))
         end
 
         ##Relatar mudança no banco de dados
-        report[:registers].push({:content => current_state,
-                                 :created_at => Time.new})
-        db[:reports].update_one({:_id => report[:_id]},
-                    { "$set" => { :registers => report[:registers]} })
+        client[:reports].insert(report)
 
       end
       
     rescue StandardError => e
-      logs.insert_one({:message_log => e.full_message, :at => Time.new})
+      logs.insert({:message_log => e.full_message, :at => Time.new})
     rescue SyntaxError => e
-      logs.insert_one({:message_log => e.full_message, :at => Time.new})
+      logs.insert({:message_log => e.full_message, :at => Time.new})
     end
 
   end
