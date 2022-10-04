@@ -32,7 +32,7 @@ if user
 
         #notificar no telegram
         begin
-          model = client[:notification_models].where{id: ele[:notification_model_id]}.first
+          model = client[:notification_models].where(id: ele[:notification_model_id]).first
           if !model.nil?
             notificar_telegram(mount_message(model[:wanted_items], model[:message]),
             !model[:message].rindex("<img>").nil?)
@@ -44,9 +44,9 @@ if user
         end
 
         #executar tarefa associada
-        model_task = client[:model_tasks].where{id: ele[:model_task_id]}.first
+        model_task = client[:model_tasks].where(id: ele[:model_task_id]).first
         if !model_task.nil?
-          client[:queued_tasks].insert_one(model_task.except(:id))
+          client[:queued_tasks].insert(model_task.except(:id))
         end
 
         ##Relatar mudança no banco de dados
