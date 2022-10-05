@@ -5,7 +5,7 @@ source "https://rubygems.org"
 # gem "rails"
 gem "nokogiri"
 gem "httparty"
-gem "pg"
+gem "sqlite3"
 gem "sequel"
 
 # gem 'telegram-bot-ruby'
