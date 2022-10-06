@@ -3,11 +3,11 @@ require_relative 'scraper'
 include Notifier
 include Scraper
 
-require "pg"
+require "sqlite3"
 require "sequel"
 
 
-client = Sequel.connect('postgres://postgres:password@db/scaveed')
+client = Sequel.connect('sqlite://database/scaveed_development.db')
 logs = client[:logs]
 user = client[:users].first
 
@@ -24,17 +24,17 @@ if user
                                     "inner_html")
       
 
-      if client[:reports].where{(fromId: ele[:id) & (current_state: current_state)} != nil
+      if client[:reports].where{(listen_id: ele[:id) & (current_state: current_state)} != nil
 
-        report = {:fromId => ele[:_id],
+        report = {:listen_id => ele[:_id],
                 :current_state => current_state,
                 :at => Time.now}
 
         #notificar no telegram
         begin
           model = client[:notification_models].where(id: ele[:notification_model_id]).first
-          if !model.nil?
-            notificar_telegram(mount_message(model[:wanted_items], model[:message]),
+          if !model.nil?            
+            notificar_telegram(mount_message(client[:items].where(notification_model_id: model[:id]), model[:message]),
             !model[:message].rindex("<img>").nil?)
           end
         rescue StandardError => e
