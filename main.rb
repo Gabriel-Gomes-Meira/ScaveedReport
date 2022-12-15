@@ -3,11 +3,12 @@ require_relative 'scraper'
 include Notifier
 include Scraper
 
-require "sqlite3"
+require "pg"
 require "sequel"
 
 
-client = Sequel.connect('sqlite://database/scaveed_development.db')
+client = Sequel.connect('postgres://postgres:password@db/scaveed_development')
+# client = Sequel.connect('sqlite://database/scaveed_development.db')
 logs = client[:logs]
 user = client[:users].first
 
@@ -25,7 +26,7 @@ if user
 
       # byebug
       if client[:reports].where(listen_id: ele[:id], current_state: current_state).first == nil
-        client.transaction do
+        # client.transaction do
           report = {:listen_id => ele[:id],
                     :current_state => current_state,
                     :at => Time.now}
@@ -51,7 +52,7 @@ if user
 
           ##Relatar mudança no banco de dados
           client[:reports].insert(report)
-        end
+        # end
 
       end
       
