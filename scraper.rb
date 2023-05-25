@@ -7,10 +7,10 @@ module Scraper
     Nokogiri::HTML(HTTParty.get(url))
   end
 
-  def scrap_items(page, path, distinguer = {})
+  def scrap_items(page, path, islast = false )
 
       element = page.search(path)
-      if distinguer[:is_last]
+      if islast
         element.last
       else
         element.first
@@ -45,7 +45,7 @@ module Scraper
     processed_message = message
     for i in wanted_items do
 
-      item =scrap_items(readed_page(i[:url]), i[:path], i[:distinguer])
+      item = scrap_items(readed_page(i[:url]), i[:path], i[:islast])
       replace_word(processed_message, i[:var_name], scrap_value(item, i[:wanted_value]))
     end
 

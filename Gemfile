@@ -5,7 +5,9 @@ source "https://rubygems.org"
 # gem "rails"
 gem "nokogiri"
 gem "httparty"
-gem "mongo", "~> 2"
+gem "pg"
+gem "sequel"
+
 # gem 'telegram-bot-ruby'
 gem 'telegram-bot'
 gem 'byebug'
