@@ -2,12 +2,14 @@
 
 source "https://rubygems.org"
 
-# gem "rails"
-gem "nokogiri"
-gem "httparty"
+# database
 gem "pg"
 gem "sequel"
 
-# gem 'telegram-bot-ruby'
+# scraper
+gem 'selenium-webdriver', '~> 4.18', '>= 4.18.1'
+
+# telegram
 gem 'telegram-bot'
+
 gem 'byebug'
