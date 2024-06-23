@@ -1,15 +1,22 @@
-require 'httparty'
-require 'nokogiri'
+require 'selenium-webdriver'
 require 'byebug'
 
 module Scraper
-  def readed_page(url)
-    Nokogiri::HTML(HTTParty.get(url))
+
+  def initBrowser()
+    options = Selenium::WebDriver::Firefox::Options.new(binary: '/usr/local/bin/firefox')
+    options.add_argument('--headless')
+    @@browser = Selenium::webdriver.for :firefox, options: options
   end
 
-  def scrap_items(page, path, islast = false )
+  def go_to(url)    
+    @@browser.get(url)
+  end
 
-      element = page.search(path)
+  def scrap_items(path, islast = false )
+      byebug
+
+      element = @@browser.search(path)
       if islast
         element.last
       else
@@ -45,7 +52,7 @@ module Scraper
     processed_message = message
     for i in wanted_items do
 
-      item = scrap_items(readed_page(i[:url]), i[:path], i[:islast])
+      item = scrap_items(go_to(i[:url]), i[:path], i[:islast])
       replace_word(processed_message, i[:var_name], scrap_value(item, i[:wanted_value]))
     end
 

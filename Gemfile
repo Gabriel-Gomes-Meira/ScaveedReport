@@ -13,3 +13,4 @@ gem 'selenium-webdriver', '~> 4.18', '>= 4.18.1'
 gem 'telegram-bot'
 
 gem 'byebug'
+gem 'solargraph', group: :development

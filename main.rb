@@ -7,21 +7,23 @@ require "pg"
 require "sequel"
 
 
-client = Sequel.connect('postgres://postgres:password@db/scaveed_development')
+client = Sequel.connect('postgres://postgres:password@192.168.100.4/scaveed_development')
 # client = Sequel.connect('sqlite://database/scaveed_development.db')
 logs = client[:logs]
 user = client[:users].first
 
+
 if user
   $token = user[:telegram_token]
   $chatid = user[:telegram_chatid]
+  initBrowser
 
   listens = client[:listens]
   for ele in listens do
     begin
-      page = readed_page(ele[:url])
+      go_to(ele[:url])
 
-      current_state = scrap_value(scrap_items(page, ele[:element_indentifier]),
+      current_state = scrap_value(scrap_items(ele[:element_indentifier]),
                                     "inner_html")
 
       # byebug
