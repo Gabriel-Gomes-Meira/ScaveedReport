@@ -72,7 +72,7 @@ if user
 
       cron_next_run = ele[:next_run]
       next_run = Time.now
-      if !cron_next_run.nil?                        
+      if !cron_next_run                     
         next_run = Time.parse(ele[:next_run])
       end
       
