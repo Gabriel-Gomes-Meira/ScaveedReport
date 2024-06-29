@@ -80,7 +80,9 @@ if user
         #executar tarefa associada
         model_task = client[:model_tasks].where(id: ele[:model_task_id]).first
         if !model_task.nil?
-          client[:queued_tasks].insert(model_task.except(:id, :created_at))
+          task = model_task.except(:id, :created_at)
+          task[:params] = ele[:params]
+          client[:queued_tasks].insert(task)
         end
         crons.where(id: ele[:id]).update(next_run: (Time.now + ele[:interval].to_i).to_s)
       end
